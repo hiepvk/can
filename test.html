@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo Phiếu Cân Xe & Container</title>
+    <title>PHIẾU CÂN VỎ</title>
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -187,17 +187,14 @@
 
 <div class="container">
     <div class="form-panel">
-        <h2>Tạo Phiếu Cân Vỏ / Cân Xe</h2>
+        <h2>Tạo Phiếu Cân Vỏ</h2>
         
         <div class="status-box">
-            💡 <strong>Quy tắc nhập liệu tự động:</strong>
-            <br>• Tên mặt hàng: Chỉ nhập chữ + **Tự động viết hoa** (VD: CÁ ĐL).
-            <br>• Tên KH / Biển số: Đồng bộ + **Tự động viết hoa**.
-            <br>• Số container: Chỉ nhập số + **Tối đa 7 chữ số**.
+            💡 <strong>Update:</strong>
         </div>
         
         <div class="form-group">
-            <label style="color: #2980b9;">Tên khách hàng / Biển số:</label>
+            <label style="color: #2980b9;">Tên khách hàng:</label>
             <input type="text" id="clientName" placeholder="Nhập tên KH hoặc Biển số..." oninput="syncClientToPlate()">
         </div>
 
@@ -220,14 +217,14 @@
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label>Số container (Tối đa 7 số):</label>
+                    <label>Số container:</label>
                     <input type="text" id="containerNo" placeholder="VD: 9077726" maxlength="7" oninput="validateContainerNo(this)">
                 </div>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Tên mặt hàng (Chữ in hoa):</label>
+            <label>Tên hàng:</label>
             <input type="text" id="cargoType" placeholder="VD: CÁ ĐL" oninput="validateCargoType(this)">
         </div>
 
