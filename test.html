@@ -61,9 +61,6 @@
             margin-bottom: 15px;
             font-size: 14px;
             color: #2e7d32;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
         .form-group {
             margin-bottom: 12px;
@@ -96,7 +93,7 @@
             background: #3498db;
             color: #fff;
             border: none;
-            padding: 0 12px;
+            padding: 0 16px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 13px;
@@ -180,21 +177,18 @@
         <h2>Tạo Phiếu Cân Vỏ / Cân Xe</h2>
         
         <div class="status-box">
-            <span><strong>💡 Trạng thái:</strong> Chuẩn bị tạo phiếu mới</span>
+            <strong>💡 PHIẾU CÂN VỎ:</strong> Tên khách hàng và Số xe tự động đồng bộ 2 chiều.
         </div>
         
         <div class="form-group">
             <label style="color: #2980b9;">Tên khách hàng:</label>
-            <div class="input-with-btn">
-                <input type="text" id="clientName" placeholder="Tên khách hàng hoặc Biển số xe..." oninput="drawTextOnImage()">
-                <button type="button" class="btn-inline" onclick="copyPlateToClient()">Lấy từ Biển số</button>
-            </div>
+            <input type="text" id="clientName" placeholder="Nhập tên KH hoặc Biển số..." oninput="syncClientToPlate()">
         </div>
 
         <div class="form-group">
             <label>Ngày cân (Ngày vào):</label>
             <div class="input-with-btn">
-                <input type="text" id="dateIn" placeholder="VD: 15/07/2026" oninput="drawTextOnImage()">
+                <input type="text" id="dateIn" placeholder="Nhập số VD: 15072026 -> 15/07/2026" maxlength="10" oninput="formatDateInput(this)">
                 <button type="button" class="btn-inline" onclick="setTodayDate()">Hôm nay</button>
             </div>
         </div>
@@ -205,7 +199,7 @@
             <div class="col">
                 <div class="form-group">
                     <label style="color: #2980b9;">Số xe (Biển số):</label>
-                    <input type="text" id="truckPlate" placeholder="VD: 15C13397" oninput="handlePlateInput()">
+                    <input type="text" id="truckPlate" placeholder="VD: 15C13397" oninput="syncPlateToClient()">
                 </div>
             </div>
             <div class="col">
@@ -276,6 +270,53 @@
         drawTextOnImage();
     };
 
+    // 1. Đồng bộ 2 chiều: Tên khách -> Số xe
+    function syncClientToPlate() {
+        const clientVal = document.getElementById('clientName').value;
+        document.getElementById('truckPlate').value = clientVal;
+        drawTextOnImage();
+    }
+
+    // 1. Đồng bộ 2 chiều: Số xe -> Tên khách
+    function syncPlateToClient() {
+        const plateVal = document.getElementById('truckPlate').value;
+        document.getElementById('clientName').value = plateVal;
+        drawTextOnImage();
+    }
+
+    // 2. Định dạng ngày thông minh (chỉ nhận tối đa 8 số, tự thêm dấu /)
+    function formatDateInput(input) {
+        // Chỉ giữ lại chữ số, loại bỏ ký tự khác
+        let digits = input.value.replace(/\D/g, '');
+        
+        // Giới hạn tối đa 8 chữ số (DDMMYYYY)
+        if (digits.length > 8) {
+            digits = digits.substring(0, 8);
+        }
+
+        let formatted = digits;
+        if (digits.length >= 5) {
+            // Định dạng: DD/MM/YYYY
+            formatted = `${digits.substring(0, 2)}/${digits.substring(2, 4)}/${digits.substring(4)}`;
+        } else if (digits.length >= 3) {
+            // Định dạng: DD/MM
+            formatted = `${digits.substring(0, 2)}/${digits.substring(2)}`;
+        }
+
+        input.value = formatted;
+        drawTextOnImage();
+    }
+
+    // Nút chọn ngày hôm nay
+    function setTodayDate() {
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        document.getElementById('dateIn').value = `${day}/${month}/${year}`;
+        drawTextOnImage();
+    }
+
     // Định dạng số có dấu phẩy phân cách hàng nghìn
     function formatNumberString(val) {
         let num = val.replace(/[^0-9]/g, '');
@@ -326,41 +367,6 @@
         } else {
             document.getElementById('weightNet').value = '0';
         }
-    }
-
-    // Xử lý khi nhập Biển số xe
-    function handlePlateInput() {
-        const plate = document.getElementById('truckPlate').value;
-        const clientInput = document.getElementById('clientName');
-        
-        // Tự động đồng bộ sang Khách hàng nếu Khách hàng chưa nhập hoặc đang trùng với Biển số trước đó
-        if (!clientInput.dataset.userModified) {
-            clientInput.value = plate;
-        }
-        drawTextOnImage();
-    }
-
-    function copyPlateToClient() {
-        const plate = document.getElementById('truckPlate').value;
-        const clientInput = document.getElementById('clientName');
-        clientInput.value = plate;
-        clientInput.dataset.userModified = "true";
-        drawTextOnImage();
-    }
-
-    // Đánh dấu người dùng đã tự gõ tên khách hàng (không tự ghi đè từ Biển số nữa)
-    document.getElementById('clientName').addEventListener('input', function() {
-        this.dataset.userModified = "true";
-    });
-
-    // Điền ngày hôm nay
-    function setTodayDate() {
-        const now = new Date();
-        const day = String(now.getDate()).padStart(2, '0');
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const year = now.getFullYear();
-        document.getElementById('dateIn').value = `${day}/${month}/${year}`;
-        drawTextOnImage();
     }
 
     // Vẽ nội dung lên phôi ảnh
@@ -416,7 +422,6 @@
     // Làm mới toàn bộ phom
     function resetForm() {
         document.getElementById('clientName').value = '';
-        delete document.getElementById('clientName').dataset.userModified;
         document.getElementById('dateIn').value = '';
         document.getElementById('truckPlate').value = '';
         document.getElementById('containerNo').value = '';
