@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>phiếu cân vỏ</title>
+    <title>Tạo Phiếu Cân Xe & Container</title>
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -62,7 +62,7 @@
             margin-bottom: 16px;
             font-size: 13px;
             color: #1b4f72;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
         .form-group {
@@ -187,10 +187,13 @@
 
 <div class="container">
     <div class="form-panel">
-        <h2>Tạo Phiếu Cân Vỏ</h2>
+        <h2>Tạo Phiếu Cân Vỏ / Cân Xe</h2>
         
         <div class="status-box">
-            💡 <strong>Phiếu cân vỏ:</strong>
+            💡 <strong>Quy tắc nhập liệu tự động:</strong>
+            <br>• Tên mặt hàng: Chỉ nhập chữ + **Tự động viết hoa** (VD: CÁ ĐL).
+            <br>• Tên KH / Biển số: Đồng bộ + **Tự động viết hoa**.
+            <br>• Số container: Chỉ nhập số + **Tối đa 7 chữ số**.
         </div>
         
         <div class="form-group">
@@ -217,14 +220,14 @@
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label>Số container (Chỉ nhập số):</label>
-                    <input type="text" id="containerNo" placeholder="VD: 9077726" oninput="validateContainerNo(this)">
+                    <label>Số container (Tối đa 7 số):</label>
+                    <input type="text" id="containerNo" placeholder="VD: 9077726" maxlength="7" oninput="validateContainerNo(this)">
                 </div>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Tên mặt hàng (Chỉ nhập chữ):</label>
+            <label>Tên mặt hàng (Chữ in hoa):</label>
             <input type="text" id="cargoType" placeholder="VD: CÁ ĐL" oninput="validateCargoType(this)">
         </div>
 
@@ -282,19 +285,23 @@
         drawTextOnImage();
     };
 
-    // RÀNG BUỘC 1: Tên mặt hàng CHỈ CHO NHẬP CHỮ
+    // 1. Tên mặt hàng: CHỈ NHẬP CHỮ & TỰ ĐỘNG VIẾT HOA
     function validateCargoType(input) {
-        input.value = input.value.replace(/[0-9]/g, '');
+        input.value = input.value.replace(/[0-9]/g, '').toUpperCase();
         drawTextOnImage();
     }
 
-    // RÀNG BUỘC 2: Số Container CHỈ CHO NHẬP SỐ
+    // 2. Số Container: CHỈ NHẬP SỐ & TỐI ĐA 7 SỐ
     function validateContainerNo(input) {
-        input.value = input.value.replace(/[^0-9]/g, '');
+        let val = input.value.replace(/[^0-9]/g, '');
+        if (val.length > 7) {
+            val = val.substring(0, 7);
+        }
+        input.value = val;
         drawTextOnImage();
     }
 
-    // RÀNG BUỘC 3: Định dạng chuỗi số có dấu phân cách hàng nghìn
+    // 3. Định dạng chuỗi số có dấu phân cách hàng nghìn
     function formatNumberString(val) {
         let num = val.replace(/[^0-9]/g, '');
         if (!num) return '';
@@ -314,14 +321,18 @@
         drawTextOnImage();
     }
 
-    // Đồng bộ Tên khách <-> Biển số
+    // 4. Đồng bộ 2 chiều Tên khách <-> Biển số + VIẾT HOA CẢ 2
     function syncClientToPlate() {
-        document.getElementById('truckPlate').value = document.getElementById('clientName').value;
+        const clientInput = document.getElementById('clientName');
+        clientInput.value = clientInput.value.toUpperCase();
+        document.getElementById('truckPlate').value = clientInput.value;
         drawTextOnImage();
     }
 
     function syncPlateToClient() {
-        document.getElementById('clientName').value = document.getElementById('truckPlate').value;
+        const plateInput = document.getElementById('truckPlate');
+        plateInput.value = plateInput.value.toUpperCase();
+        document.getElementById('clientName').value = plateInput.value;
         drawTextOnImage();
     }
 
@@ -404,7 +415,7 @@
         if (truckPlate) ctx.fillText(truckPlate, 840, 1460);
         if (containerNo) ctx.fillText(containerNo, 1300, 1460);
         
-        // Căn phải cho số
+        // Căn phải cho dữ liệu số
         ctx.textAlign = "right";
         if (weightGross) ctx.fillText(weightGross, 1920, 1460);
         if (weightTare) ctx.fillText(weightTare, 2250, 1460);
