@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHIẾU CÂN XE 2</title>
+    <title>PHIẾU CÂN XE 3</title>
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -187,7 +187,7 @@
 
 <div class="container">
     <div class="form-panel">
-        <h2>Tạo Phiếu Cân Xe 2</h2>
+        <h2>Tạo Phiếu Cân Xe 3</h2>
         
         <div class="status-box">
             💡 <strong>Update:</strong>
@@ -195,7 +195,7 @@
         
         <div class="form-group">
             <label style="color: #2980b9;">Tên khách hàng:</label>
-            <input type="text" id="clientName" placeholder="Nhập tên KH hoặc Biển số..." oninput="syncClientToPlate()">
+            <input type="text" id="clientName" placeholder="Nhập Biển số..." oninput="syncClientToPlate()">
         </div>
 
         <div class="form-group">
@@ -275,7 +275,7 @@
     const imgPhoi = new Image();
 
     // Khởi tạo phôi ảnh
-    imgPhoi.src = 'phieucanxe2.jpeg';
+    imgPhoi.src = 'phieucanxe3.jpeg';
     imgPhoi.onload = function() {
         canvas.width = imgPhoi.width;
         canvas.height = imgPhoi.height;
@@ -392,7 +392,7 @@
         ctx.drawImage(imgPhoi, 0, 0);
 
         ctx.fillStyle = '#0f1a24';
-        ctx.font = '48px "Arial"';
+        ctx.font = '45px "Arial"';
 
         const clientName = document.getElementById('clientName').value;
         const dateIn = document.getElementById('dateIn').value;
@@ -406,18 +406,18 @@
 
         // Căn trái
         ctx.textAlign = "left";
-        if (dateIn) ctx.fillText(dateIn, 2120, 1766);
-        if (clientName) ctx.fillText(clientName, 770, 2004);
-        if (cargoType) ctx.fillText(cargoType, 455, 2319);
-        if (truckPlate) ctx.fillText(truckPlate, 832, 2322);
-        if (containerNo) ctx.fillText(containerNo, 1190, 2322);
+        if (dateIn) ctx.fillText(dateIn, 2070, 1700);
+        if (clientName) ctx.fillText(clientName, 650, 1950);
+        if (cargoType) ctx.fillText(cargoType, 370, 2280);
+        if (truckPlate) ctx.fillText(truckPlate, 740, 2280);
+        if (containerNo) ctx.fillText(containerNo, 1110, 2280);
         
         // Căn phải cho dữ liệu số
         ctx.textAlign = "right";
-        if (weightGross) ctx.fillText(weightGross, 1673, 2322);
-        if (weightTare) ctx.fillText(weightTare, 1940, 2322);
-        if (weightNet && weightNet !== 'Lỗi Bì > Tổng') ctx.fillText(weightNet, 2214, 2322);
-        if (priceService) ctx.fillText(priceService, 2620, 2322);
+        if (weightGross) ctx.fillText(weightGross, 1600, 2280);
+        if (weightTare) ctx.fillText(weightTare, 1890, 2280);
+        if (weightNet && weightNet !== 'Lỗi Bì > Tổng') ctx.fillText(weightNet, 2176, 2280);
+        if (priceService) ctx.fillText(priceService, 2600, 2280);
     }
 
     // Xuất file ảnh JPG
