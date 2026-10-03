@@ -12,11 +12,11 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f4f6f9;
             margin: 0;
-            padding: 16px;
+            padding: 20px;
             color: #2c3e50;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1250px;
             background: #ffffff;
             margin: 0 auto;
             padding: 24px;
@@ -27,7 +27,7 @@
             gap: 24px;
         }
 
-        @media (min-width: 900px) {
+        @media (min-width: 992px) {
             .container {
                 grid-template-columns: 1fr 1fr;
             }
@@ -56,7 +56,7 @@
 
         .status-box {
             background-color: #ebf5fb;
-            padding: 12px 14px;
+            padding: 10px 14px;
             border: 1px solid #aed6f1;
             border-radius: 8px;
             margin-bottom: 16px;
@@ -156,8 +156,8 @@
         }
 
         .btn-action:hover { background-color: #d35400; }
-        .btn-download { background-color: #27ae60; }
-        .btn-download:hover { background-color: #219653; }
+        .btn-view { background-color: #27ae60; }
+        .btn-view:hover { background-color: #219653; }
         .btn-reset { background-color: #95a5a6; }
         .btn-reset:hover { background-color: #7f8c8d; }
 
@@ -181,6 +181,59 @@
             margin-top: 12px;
             border-radius: 4px;
         }
+
+        /* Modal xem ảnh cho iOS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 95%;
+            max-height: 80vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            object-fit: contain;
+        }
+
+        .modal-note {
+            color: #ffffff;
+            margin-top: 15px;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #fff;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -190,7 +243,7 @@
         <h2>Tạo Phiếu Cân Xe 1</h2>
         
         <div class="status-box">
-            💡 <strong>Update:</strong>
+            💡 <strong>Mẹo iOS:</strong> Nhấn <b>XEM ẢNH</b>, sau đó <b>nhấn giữ vào ảnh</b> để lưu trực tiếp vào thư viện <b>Ảnh</b>.
         </div>
         
         <div class="form-group">
@@ -258,8 +311,8 @@
 
         <div class="action-grid">
             <button type="button" class="btn-action" onclick="drawTextOnImage()">🔄 CẬP NHẬT</button>
-            <button type="button" class="btn-action btn-download" onclick="exportToJPG()">💾 TẢI ẢNH</button>
-            <button type="button" class="btn-action btn-reset" onclick="resetForm()">🗑️ XÓA PHOM</button>
+            <button type="button" class="btn-action btn-view" onclick="openImageModal()">👁️ XEM ẢNH</button>
+            <button type="button" class="btn-action btn-reset" onclick="resetForm()">🗑️️ XÓA PHOM</button>
         </div>
     </div>
 
@@ -267,6 +320,13 @@
         <h3 style="border:none; margin: 0; padding:0; color:#2c3e50;">XEM TRƯỚC KẾT QUẢ</h3>
         <canvas id="previewCanvas"></canvas>
     </div>
+</div>
+
+<!-- Modal xem ảnh full screen hỗ trợ nhấn giữ để lưu -->
+<div id="imageModal" class="modal" onclick="closeImageModal(event)">
+    <span class="close-btn" onclick="closeImageModal(event)">&times;</span>
+    <img id="modalImage" class="modal-content" alt="Phát phiếu cân">
+    <div class="modal-note">👆 <strong>Nhấn giữ vào ảnh</strong> ➔ Chọn <strong>"Thêm vào Ảnh"</strong></div>
 </div>
 
 <script>
@@ -281,6 +341,18 @@
         canvas.height = imgPhoi.height;
         drawTextOnImage();
     };
+
+    // Phím tắt bàn phím
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'Enter') {
+            e.preventDefault();
+            openImageModal();
+        } else if (e.key === 'Enter') {
+            drawTextOnImage();
+        } else if (e.key === 'Escape') {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+    });
 
     // 1. Tên mặt hàng: CHỈ NHẬP CHỮ & TỰ ĐỘNG VIẾT HOA
     function validateCargoType(input) {
@@ -315,6 +387,18 @@
         inputElement.setSelectionRange(selectionStart + (newLength - oldLength), selectionStart + (newLength - oldLength));
         
         tinhKhoiLuongHang();
+        drawTextOnImage();
+    }
+
+    function formatCurrencyInput(inputElement) {
+        const selectionStart = inputElement.selectionStart;
+        const oldLength = inputElement.value.length;
+        
+        inputElement.value = formatNumberString(inputElement.value);
+        
+        const newLength = inputElement.value.length;
+        inputElement.setSelectionRange(selectionStart + (newLength - oldLength), selectionStart + (newLength - oldLength));
+        
         drawTextOnImage();
     }
 
@@ -353,10 +437,6 @@
         const year = now.getFullYear();
         document.getElementById('dateIn').value = `${day}/${month}/${year}`;
         drawTextOnImage();
-    }
-
-    function formatCurrencyInput(inputElement) {
-        handleWeightInput(inputElement);
     }
 
     // Tính Khối Lượng Hàng Net = Gross - Tare
@@ -420,16 +500,21 @@
         if (priceService) ctx.fillText(priceService, 2550, 2082);
     }
 
-    // Xuất file ảnh JPG
-    function exportToJPG() {
+    // Mở Modal xem ảnh để nhấn giữ lưu vào Photos
+    function openImageModal() {
         drawTextOnImage();
-        const rawPlate = document.getElementById('truckPlate').value.trim();
-        const safePlate = rawPlate.replace(/[^a-zA-Z0-9]/g, '_') || 'Moi';
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
         
-        const link = document.createElement('a');
-        link.download = `Phieu_Can_${safePlate}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.95);
-        link.click();
+        modalImg.src = dataUrl;
+        modal.style.display = 'flex';
+    }
+
+    function closeImageModal(e) {
+        if (e.target.classList.contains('modal') || e.target.classList.contains('close-btn')) {
+            document.getElementById('imageModal').style.display = 'none';
+        }
     }
 
     // Reset Form
